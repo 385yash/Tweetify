@@ -1,0 +1,118 @@
+package com.newzee.tweetify.screens
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.newzee.tweetify.R
+import com.newzee.tweetify.viewmodels.CategoryViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+
+@Composable
+fun CategoryScreen(onClick: (category: String) -> Unit) {
+    val categoryViewModel: CategoryViewModel = hiltViewModel()
+    val categories: State<List<String>> = categoryViewModel.category.collectAsState()
+    val statusBarColor = Color(0xFFE6F4FB) // Your desired status bar color
+
+    if (categories.value.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ){
+            Text(text = "Loading....", style = MaterialTheme.typography.bodyMedium)
+        }
+    } else {
+        CustomStatusBarColorTheme(statusBarColor = statusBarColor) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFE6F4FB)),
+            ) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.SpaceAround,
+                ) {
+                    items(categories.value.distinct()) {
+                        CategoryItem(category = it, onClick)
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun CategoryItem(category: String, onClick: (category: String) -> Unit) {
+
+    Card(
+        shape = RoundedCornerShape(32.dp), // Adjust the radius as needed
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 10.dp
+        ),
+        modifier = Modifier
+            .padding(7.dp)
+            .clickable {
+                onClick(category)
+            }
+            .width(50.dp)
+            .height(166.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.wave2),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            Text(
+                text = category,
+                fontSize = 18.sp,
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.BottomCenter)
+            )
+        }
+    }
+}
+
